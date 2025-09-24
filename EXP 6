@@ -1,103 +1,187 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+// Node structure
 struct Node {
-    int data;
+    char page[100];
     struct Node* next;
 };
 
-/* ---------------- STACK IMPLEMENTATION ---------------- */
-struct Node* top = NULL;
-
-// Push
-void push(int x) {
-    struct Node* newNode = (struct Node*) malloc(sizeof(struct Node));
-    newNode->data = x;
+// Function to push (visit new page)
+struct Node* push(struct Node* top, char* url) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    strcpy(newNode->page, url);
     newNode->next = top;
-    top = newNode;
-    printf("%d pushed to stack\n", x);
+    printf("Visited: %s\n", url);
+    return newNode;   // return new top
 }
 
-// Pop
-void pop() {
+// Function to pop (back button)
+struct Node* pop(struct Node* top) {
     if (top == NULL) {
-        printf("Stack Underflow\n");
-        return;
+        printf("No previous page! Stack is empty.\n");
+        return NULL;
     }
     struct Node* temp = top;
-    printf("%d popped from stack\n", top->data);
+    printf("Going back from: %s\n", temp->page);
     top = top->next;
     free(temp);
+    return top;
 }
 
-// Peek
-void peekStack() {
+// Function to display current page
+void currentPage(struct Node* top) {
     if (top == NULL)
-        printf("Stack is empty\n");
+        printf("No page currently open.\n");
     else
-        printf("Top element: %d\n", top->data);
+        printf("Current page: %s\n", top->page);
 }
 
-/* ---------------- QUEUE IMPLEMENTATION ---------------- */
+// Function to display browsing history
+void showHistory(struct Node* top) {
+    if (top == NULL) {
+        printf("No browsing history.\n");
+        return;
+    }
+    printf("Browsing history (latest first):\n");
+    struct Node* temp = top;
+    while (temp != NULL) {
+        printf("%s\n", temp->page);
+        temp = temp->next;
+    }
+}
+
+int main() {
+    struct Node* top = NULL;  // stack top pointer
+    int choice;
+    char url[100];
+
+    while (1) {
+        printf("\n--- Browser Simulation (Stack using Linked List) ---\n");
+        printf("1. Visit new page\n");
+        printf("2. Back\n");
+        printf("3. Current Page\n");
+        printf("4. Show History\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        getchar(); // consume newline left by scanf
+
+        switch (choice) {
+            case 1:
+                printf("Enter webpage URL: ");
+                fgets(url, sizeof(url), stdin);
+                url[strcspn(url, "\n")] = '\0';  // remove newline
+                top = push(top, url);
+                break;
+            case 2:
+                top = pop(top);
+                break;
+            case 3:
+                currentPage(top);
+                break;
+            case 4:
+                showHistory(top);
+                break;
+            case 5:
+                exit(0);
+            default:
+                printf("Invalid choice! Try again.\n");
+        }
+    }
+    return 0;
+}
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Node structure
+struct Node {
+    char name[50];         // customer name
+    struct Node* next;
+};
+
 struct Node* front = NULL;
 struct Node* rear = NULL;
 
-// Enqueue
-void enqueue(int x) {
-    struct Node* newNode = (struct Node*) malloc(sizeof(struct Node));
-    newNode->data = x;
+// Function to enqueue (customer enters queue)
+void enqueue(char* customer) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    strcpy(newNode->name, customer);
     newNode->next = NULL;
+
     if (rear == NULL) {
-        front = rear = newNode;
+        front = rear = newNode;  // first customer
     } else {
         rear->next = newNode;
         rear = newNode;
     }
-    printf("%d enqueued to queue\n", x);
+    printf("%s entered the queue.\n", customer);
 }
 
-// Dequeue
+// Function to dequeue (serve customer)
 void dequeue() {
     if (front == NULL) {
-        printf("Queue Underflow\n");
+        printf("No customers in queue. Counter is idle.\n");
         return;
     }
     struct Node* temp = front;
-    printf("%d dequeued from queue\n", front->data);
+    printf("Serving customer: %s\n", front->name);
     front = front->next;
-    if (front == NULL) rear = NULL;
+    if (front == NULL) rear = NULL;  // queue empty
     free(temp);
 }
 
-// Peek
-void peekQueue() {
-    if (front == NULL)
-        printf("Queue is empty\n");
-    else
-        printf("Front element: %d\n", front->data);
+// Function to display queue (waiting customers)
+void displayQueue() {
+    if (front == NULL) {
+        printf("No customers waiting in queue.\n");
+        return;
+    }
+    printf("Customers waiting in queue: ");
+    struct Node* temp = front;
+    while (temp != NULL) {
+        printf("%s ", temp->name);
+        temp = temp->next;
+    }
+    printf("\n");
 }
 
-/* ---------------- MAIN MENU ---------------- */
 int main() {
-    int choice, val;
-    do {
-        printf("\n--- Linked List Implementation ---\n");
-        printf("1. Push (Stack)\n2. Pop (Stack)\n3. Peek (Stack)\n");
-        printf("4. Enqueue (Queue)\n5. Dequeue (Queue)\n6. Peek (Queue)\n");
-        printf("7. Exit\nEnter your choice: ");
+    int choice;
+    char name[50];
+
+    while (1) {
+        printf("\n--- Ticket Counter Queue (Linked List Implementation) ---\n");
+        printf("1. New Customer (Enqueue)\n");
+        printf("2. Serve Customer (Dequeue)\n");
+        printf("3. Show Waiting Queue\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
         scanf("%d", &choice);
+        getchar(); // consume newline
 
-        switch(choice) {
-            case 1: printf("Enter value: "); scanf("%d", &val); push(val); break;
-            case 2: pop(); break;
-            case 3: peekStack(); break;
-            case 4: printf("Enter value: "); scanf("%d", &val); enqueue(val); break;
-            case 5: dequeue(); break;
-            case 6: peekQueue(); break;
-            case 7: printf("Exiting...\n"); break;
-            default: printf("Invalid choice!\n");
+        switch (choice) {
+            case 1:
+                printf("Enter customer name: ");
+                fgets(name, sizeof(name), stdin);
+                name[strcspn(name, "\n")] = '\0'; // remove newline
+                enqueue(name);
+                break;
+            case 2:
+                dequeue();
+                break;
+            case 3:
+                displayQueue();
+                break;
+            case 4:
+                exit(0);
+            default:
+                printf("Invalid choice! Try again.\n");
         }
-    } while(choice != 7);
-
+    }
     return 0;
 }
