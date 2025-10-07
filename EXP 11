@@ -1,0 +1,135 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 20
+
+int adj[MAX][MAX];  // Adjacency matrix
+int visited[MAX];   // Visited array
+int n;              // Number of vertices
+
+// Function to create the adjacency matrix
+void createGraph() {
+    int i, j, edges, origin, dest;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+
+    // Initialize all elements to 0
+    for (i = 0; i < n; i++)
+        for (j = 0; j < n; j++)
+            adj[i][j] = 0;
+
+    printf("Enter number of edges: ");
+    scanf("%d", &edges);
+
+    printf("Enter edges (origin destination):\n");
+    for (i = 0; i < edges; i++) {
+        scanf("%d %d", &origin, &dest);
+        if (origin >= n || dest >= n || origin < 0 || dest < 0) {
+            printf("Invalid edge!\n");
+            i--;
+        } else {
+            adj[origin][dest] = 1;  // Directed edge
+        }
+    }
+}
+
+// Depth First Search (Recursive)
+void DFS(int v) {
+    int i;
+    printf("%d ", v);
+    visited[v] = 1;
+
+    for (i = 0; i < n; i++) {
+        if (adj[v][i] == 1 && visited[i] == 0)
+            DFS(i);
+    }
+}
+
+// Breadth First Search (Using Queue)
+void BFS(int start) {
+    int queue[MAX], front = 0, rear = 0;
+    int i, v;
+
+    for (i = 0; i < n; i++)
+        visited[i] = 0;
+
+    queue[rear++] = start;
+    visited[start] = 1;
+
+    while (front < rear) {
+        v = queue[front++];
+        printf("%d ", v);
+
+        for (i = 0; i < n; i++) {
+            if (adj[v][i] == 1 && visited[i] == 0) {
+                queue[rear++] = i;
+                visited[i] = 1;
+            }
+        }
+    }
+}
+
+// Display adjacency matrix
+void displayMatrix() {
+    int i, j;
+    printf("\nAdjacency Matrix:\n");
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++)
+            printf("%d ", adj[i][j]);
+        printf("\n");
+    }
+}
+
+// Main function
+int main() {
+    int choice, startVertex, i;
+
+    while (1) {
+        printf("\n--- GRAPH TRAVERSAL MENU ---\n");
+        printf("1. Create Graph\n");
+        printf("2. Display Adjacency Matrix\n");
+        printf("3. Perform DFS\n");
+        printf("4. Perform BFS\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                createGraph();
+                break;
+
+            case 2:
+                displayMatrix();
+                break;
+
+            case 3:
+                printf("Enter starting vertex for DFS: ");
+                scanf("%d", &startVertex);
+                for (i = 0; i < n; i++)
+                    visited[i] = 0;
+                printf("DFS Traversal: ");
+                DFS(startVertex);
+                printf("\n");
+                break;
+
+            case 4:
+                printf("Enter starting vertex for BFS: ");
+                scanf("%d", &startVertex);
+                printf("BFS Traversal: ");
+                BFS(startVertex);
+                printf("\n");
+                break;
+
+            case 5:
+                printf("Exiting...\n");
+                exit(0);
+
+            default:
+                printf("Invalid choice! Try again.\n");
+        }
+    }
+
+    return 0;
+}
