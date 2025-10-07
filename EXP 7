@@ -1,0 +1,148 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+struct Node* last = NULL;  // Points to the last node in the list
+
+// Function to create a new node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*) malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Insert at the end
+void insertEnd(int data) {
+    struct Node* newNode = createNode(data);
+    if (last == NULL) {
+        last = newNode;
+        last->next = last; // Points to itself
+    } else {
+        newNode->next = last->next;
+        last->next = newNode;
+        last = newNode;
+    }
+    printf("%d inserted at end\n", data);
+}
+
+// Insert at the beginning
+void insertBegin(int data) {
+    struct Node* newNode = createNode(data);
+    if (last == NULL) {
+        last = newNode;
+        last->next = last;
+    } else {
+        newNode->next = last->next;
+        last->next = newNode;
+    }
+    printf("%d inserted at beginning\n", data);
+}
+
+// Delete a node
+void deleteNode(int key) {
+    if (last == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+
+    struct Node* temp = last->next;
+    struct Node* prev = last;
+
+    // If the list has only one node
+    if (last == last->next && last->data == key) {
+        free(last);
+        last = NULL;
+        printf("Node with value %d deleted.\n", key);
+        return;
+    }
+
+    // If the node to delete is the first node
+    if (temp->data == key) {
+        prev->next = temp->next;
+        free(temp);
+        printf("Node with value %d deleted.\n", key);
+        return;
+    }
+
+    // Search for the node to be deleted
+    while (temp != last && temp->data != key) {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    // If node found
+    if (temp->data == key) {
+        prev->next = temp->next;
+        if (temp == last)
+            last = prev; // If last node is deleted
+        free(temp);
+        printf("Node with value %d deleted.\n", key);
+    } else {
+        printf("Node with value %d not found.\n", key);
+    }
+}
+
+// Display the list
+void display() {
+    if (last == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+
+    struct Node* temp = last->next;
+    printf("Circular Linked List: ");
+    do {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    } while (temp != last->next);
+    printf("\n");
+}
+
+// Main function with menu
+int main() {
+    int choice, data;
+
+    while (1) {
+        printf("\n--- Circular Singly Linked List Menu ---\n");
+        printf("1. Insert at Beginning\n");
+        printf("2. Insert at End\n");
+        printf("3. Delete a Node\n");
+        printf("4. Display List\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter data: ");
+                scanf("%d", &data);
+                insertBegin(data);
+                break;
+            case 2:
+                printf("Enter data: ");
+                scanf("%d", &data);
+                insertEnd(data);
+                break;
+            case 3:
+                printf("Enter value to delete: ");
+                scanf("%d", &data);
+                deleteNode(data);
+                break;
+            case 4:
+                display();
+                break;
+            case 5:
+                printf("Exiting...\n");
+                exit(0);
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+
+    return 0;
+}
