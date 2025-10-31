@@ -57,13 +57,17 @@ void deleteFromEnd() {
     struct Node* temp = head;
     struct Node* prev = NULL;
 
+    // Traverse to the last node
     while (temp->next != NULL) {
         prev = temp;
         temp = temp->next;
     }
+
+    // Check if it's the only node in the list
     if (prev == NULL) {
-        head = NULL;
+        head = NULL; // The list becomes empty
     } else {
+        // Remove the last node
         prev->next = NULL;
     }
     printf("%d deleted from end\n", temp->data);
@@ -121,10 +125,11 @@ int main() {
                 break;
             case 6:
                 printf("Exiting...\n");
-                Break;
-            Default : 
-               printf(“Invalid choice!\n”);
-            }
-} while(choice != 6 );
-return 0;
+                break;     // <-- Was 'Break'
+            default:   // <-- Was 'Default'
+                printf("Invalid choice!\n"); // <-- Had smart quotes
+        }
+    } while(choice != 6);
+    
+    return 0;
 }
